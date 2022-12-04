@@ -1,0 +1,26 @@
+apiVersion: metacontroller.k8s.io/v1alpha1
+kind: CompositeController
+metadata:
+  name: meta-smb-controller
+spec:
+  generateSelector: true
+  parentResource:
+    apiVersion: hirnkastl.com/v1
+    resource: metasmbshares
+  childResources:
+  - apiVersion: v1
+    resource: persistentvolumeclaims
+    updateStrategy:
+      method: Recreate
+  - apiVersion: v1
+    resource: persistentvolumes
+    updateStrategy:
+      method: Recreate
+  hooks:
+    sync:
+      webhook:
+        url: http://meta-smb-controller.default/sync
+    # finalize:
+    #   webhook:
+    #     url: http://meta-smb-controller.default:9090/sync
+

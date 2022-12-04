@@ -1,0 +1,10 @@
+apiVersion: hirnkastl.com/v1
+kind: MetaSmbShares
+metadata:
+  name: smbshare-sample
+spec:
+  path: "/example/path"
+  secretName: "test"
+  mountOptions:
+    - "file_mode=0700"
+    - "dir_mode=0777"

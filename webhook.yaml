@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: meta-smb-controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: meta-smb-controller
+  template:
+    metadata:
+      labels:
+        app: meta-smb-controller
+    spec:
+      containers:
+      - name: controller
+        image: python:3
+        command: ["python3", "/hooks/sync.py"]
+        volumeMounts:
+        - name: hooks
+          mountPath: /hooks
+      volumes:
+      - name: hooks
+        configMap:
+          name: meta-smb-controller
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: meta-smb-controller
+spec:
+  selector:
+    app: meta-smb-controller
+  ports:
+  - port: 80
+
