@@ -1,6 +1,7 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 
+# TODO: import kube lib and delete the pv 
 
 class Controller(BaseHTTPRequestHandler):
 

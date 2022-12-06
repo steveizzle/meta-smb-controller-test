@@ -7,7 +7,8 @@ class Controller(BaseHTTPRequestHandler):
     print("children:")
     print(children)
     desired_status = {
-      "pvcs": len(children["PersistentVolumeClaim.v1"])
+      "pvcname": parent["metadata"]["name"],
+      "pvname": "smb-%s-%s" % (parent["metadata"]["namespace"], parent["metadata"]["name"])
     }
     print("desired status:")
     print(desired_status)
