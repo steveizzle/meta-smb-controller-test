@@ -20,7 +20,7 @@ spec:
     sync:
       webhook:
         url: http://meta-smb-controller.meta-smb-controller/sync
-    # finalize:
-    #   webhook:
-    #     url: http://meta-smb-controller.default:9090/sync
+    finalize:
+      webhook:
+        url: http://meta-smb-finalizer.meta-smb-controller:8080/sync
 

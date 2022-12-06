@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: meta-smb-finalizer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: meta-smb-finalizer
+  template:
+    metadata:
+      labels:
+        app: meta-smb-finalizer
+    spec:
+      serviceAccountName: meta-smb-finalizer
+      containers:
+      - name: finalizer
+        imagePullPolicy: Always
+        image: steveizzle/meta-smb-finalizer:v0.0.2
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: meta-smb-finalizer
+spec:
+  selector:
+    app: meta-smb-finalizer
+  ports:
+  - port: 8080
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: meta-smb-finalizer
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: meta-smb-finalizer
+rules:
+- apiGroups: [""]
+  resources: ["persistentvolumes"]
+  verbs: ["get", "watch", "list","delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: meta-smb-finalizer
+subjects:
+- kind: ServiceAccount
+  name: meta-smb-finalizer
+  namespace: meta-smb-controller
+roleRef:
+  kind: ClusterRole
+  name: meta-smb-finalizer
+  apiGroup: rbac.authorization.k8s.io

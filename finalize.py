@@ -1,19 +1,25 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
-
-# TODO: import kube lib and delete the pv 
+from kubernetes import client,config
 
 class Controller(BaseHTTPRequestHandler):
 
     def do_POST(self):
+        cfg = config.load_incluster_config()
+        cli = client.CoreV1Api(client.ApiClient(cfg))
+        print("finalize request")
         observed = json.loads(self.rfile.read(
             int(self.headers.get("content-length"))))
-        observed_pv_map = observed["children"].get(
-            "Pv/v1", {})
+        print(observed)
+        parent = observed["parent"]
+        print("deleting object")
+        try:
+            cli.delete_persistent_volume(parent["status"]["pvname"])
+        finally:
+            print("object deleted")
 
-        finalized = len(observed_pv_map) == 0
         desired = {
-            "finalized": finalized
+            "finalized": True
         }
 
         self.send_response(200)
@@ -22,4 +28,5 @@ class Controller(BaseHTTPRequestHandler):
         self.wfile.write(json.dumps(desired).encode())
 
 
-HTTPServer(("", 9090), Controller).serve_forever()
+
+HTTPServer(("", 8080), Controller).serve_forever()
